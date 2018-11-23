@@ -1,25 +1,29 @@
 import React, { Component } from 'react';
-import { AppRegistry, View, Text, TextInput, Button } from 'react-native';
+import { AppRegistry, View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { postSubjectFromApi } from '../API/myAPI'
+import { putSubjectFromApi } from '../API/myAPI'
 
-class SubjectCreate extends Component {
+class SubjectUpdate extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
             name: '',
-            studentid: 0,
+            subjectid: 0,
             formDisabled: true
         }
     }
 
-    _save(studentid) {
+    componentDidMount() {
         this.setState({
-            studentid: studentid
-        }, () => {
-            postSubjectFromApi(this.state.name, this.state.studentid);
+            name: this.props.navigation.state.params.name,
+            subjectid: this.props.navigation.state.params.id
         })
+    }
+
+    _save() {
+        putSubjectFromApi(this.state.subjectid, this.state.name);
+
         this.props.navigation.goBack();
 
     }
@@ -48,6 +52,7 @@ class SubjectCreate extends Component {
                     <FormLabel>Name</FormLabel>
                     <FormInput
                         placeholder="Subject name"
+                        defaultValue={this.state.name}
                         onChangeText={(name) => this.setState({ name: name })} />
                     {this._validationName()}
 
@@ -88,4 +93,4 @@ const styles = {
     }
 };
 
-export default SubjectCreate;
+export default SubjectUpdate;

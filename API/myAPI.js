@@ -16,7 +16,6 @@ export function getSubjectsFromStudentFromApi(id) {
     .catch((error) => console.error(error))
 }
 
-// Récupération du détail d'un sujet
 export function getSubjectDetailFromApi(id) {
   const url = localhost + '/api/subject/' + id;
   return fetch(url)
@@ -24,21 +23,7 @@ export function getSubjectDetailFromApi(id) {
     .catch((error) => console.error(error));
 }
 
-export function getGradeDetailFromApi(id) {
-  const url = localhost + '/api/grade/' + id;
-  return fetch(url)
-    .then((response) => response.json())
-    .catch((error) => console.error(error));
-}
-
-export function getStudentFromApi(id) {
-  const url = localhost + '/api/student/' + id;
-  return fetch(url)
-    .then((response) => response.json())
-    .catch((error) => console.error(error))
-}
-
-export function postStudentFromApi(name, studentid) {
+export function postSubjectFromApi(name, studentid) {
   const url = localhost + '/api/subject/';
   return fetch(url, {
     method: 'POST',
@@ -54,7 +39,22 @@ export function postStudentFromApi(name, studentid) {
   });
 }
 
-export function deleteStudentFromApi(subjectid) {
+export function putSubjectFromApi(subjectid, name) {
+  const url = localhost + '/api/subject/';
+  return fetch(url, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: name,
+      subjectid: subjectid
+    }),
+  });
+}
+
+export function deleteSubjectFromApi(subjectid) {
   const url = localhost + '/api/subject/' + subjectid;
   return fetch(url, {
     method: 'DELETE',
@@ -63,4 +63,63 @@ export function deleteStudentFromApi(subjectid) {
       'Content-Type': 'application/json',
     }
   });
+}
+
+export function getGradeDetailFromApi(id) {
+  const url = localhost + '/api/grade/' + id;
+  return fetch(url)
+    .then((response) => response.json())
+    .catch((error) => console.error(error));
+}
+
+export function postGradeFromApi(name, value, weight, subjectid) {
+  const url = localhost + '/api/grade/';
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: name,
+      value: value,
+      weight: weight,
+      subjectid: subjectid
+    }),
+  });
+}
+
+export function putGradeFromApi(gradeid, name, value, weight) {
+  const url = localhost + '/api/grade/';
+  return fetch(url, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      gradeid: gradeid,
+      name: name,
+      value: value,
+      weight: weight
+    }),
+  });
+}
+
+export function deleteGradeFromApi(gradeid) {
+  const url = localhost + '/api/grade/' + gradeid;
+  return fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  });
+}
+
+export function getStudentFromApi(id) {
+  const url = localhost + '/api/student/' + id;
+  return fetch(url)
+    .then((response) => response.json())
+    .catch((error) => console.error(error))
 }

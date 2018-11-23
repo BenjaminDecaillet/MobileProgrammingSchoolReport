@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator, YellowBox } from 'react-native';
 import React, { Component } from 'react';
 import { Button, Icon } from 'react-native-elements';
 import { getStudentFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
@@ -18,9 +18,9 @@ class HomePage extends Component {
         this._loadSubjects = this._loadSubjects.bind(this)
     }
     componentDidMount() {
-        this._loadSubjects();
+        this._getSubjects();
     }
-    
+
     _loadStudent() {
         this.setState({ isLoading: true })
         getStudentFromApi(this.state.studentId).then(data => {
@@ -67,7 +67,7 @@ class HomePage extends Component {
     render() {
         return (
             <View style={styles.main_container}>
-                <Text style={styles.title_text}>Student {this.state.student} {this.state.studentId} </Text>
+                <Text style={styles.title_text}>{this.state.student} Subjects </Text>
                 <Button
                     style={{ height: 50, }}
                     title='Show My Subjects'

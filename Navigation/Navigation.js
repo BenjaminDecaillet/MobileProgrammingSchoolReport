@@ -5,6 +5,9 @@ import HomePage from '../Components/HomePage'
 import SubjectDetail from '../Components/SubjectDetail'
 import GradeDetail from '../Components/GradeDetail'
 import SubjectCreate from '../Components/SubjectCreate'
+import GradeCreate from '../Components/GradeCreate'
+import GradeUpdate from '../Components/GradeUpdate'
+import SubjectUpdate from '../Components/SubjectUpdate'
 
 const SubjectStackNavigator = createStackNavigator({
   SubjectsHome: {
@@ -23,6 +26,24 @@ const SubjectStackNavigator = createStackNavigator({
     screen: SubjectCreate,
     navigationOptions: {
       title: 'Add Subject'
+    }
+  },
+  GradeCreate: {
+    screen: GradeCreate,
+    navigationOptions: {
+      title: 'Add Grade'
+    }
+  },
+  GradeUpdate: {
+    screen: GradeUpdate,
+    navigationOptions: {
+      title: 'Update Grade'
+    }
+  },
+  SubjectUpdate:{
+    screen: SubjectUpdate,
+    navigationOptions: {
+      title: 'Update Subject'
     }
   }
 })

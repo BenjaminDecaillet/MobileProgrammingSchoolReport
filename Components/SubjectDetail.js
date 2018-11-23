@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
-import { getSubjectDetailFromApi, deleteStudentFromApi } from '../API/myAPI'
+import { getSubjectDetailFromApi, deleteSubjectFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
-import moment from 'moment'
-import numeral from 'numeral'
 import { connect } from 'react-redux'
 import GradeList from './GradeList';
 
@@ -25,7 +23,7 @@ class SubjectDetail extends Component {
             })
             return
         }
-        // Le film n'est pas dans nos favoris, on n'a pas son détail
+        // Le sujet n'est pas dans nos favoris, on n'a pas son détail
         // On appelle l'API pour récupérer son détail
         this.setState({ isLoading: true })
         getSubjectDetailFromApi(this.props.navigation.state.params.idSubject).then(data => {
@@ -48,8 +46,16 @@ class SubjectDetail extends Component {
     }
 
     _deleteSubject() {
-        deleteStudentFromApi(this.props.navigation.state.params.idSubject);
+        deleteSubjectFromApi(this.props.navigation.state.params.idSubject);
         this.props.navigation.goBack();
+    }
+
+    _updateSubject() {
+        this.props.navigation.navigate('SubjectUpdate',
+            {
+                id: this.props.navigation.state.params.idSubject,
+                name: this.state.subject.name
+            })
     }
 
     _toggleFavorite() {
@@ -87,6 +93,10 @@ class SubjectDetail extends Component {
         }
     }
 
+    _displayFormAddGrade = () => {
+        this.props.navigation.navigate('GradeCreate', { subjectid: this.props.navigation.state.params.idSubject })
+    }
+
     _displaySubject() {
         const { subject } = this.state
         if (subject != undefined) {
@@ -94,30 +104,53 @@ class SubjectDetail extends Component {
                 <ScrollView style={styles.scrollview_container}>
                     <View style={styles.header_container}>
                         <Text style={styles.title_text}>{subject.name}</Text>
-                        <TouchableOpacity
-                            style={styles.favorite_container}
-                            onPress={() => this._toggleFavorite()}>
-                            {this._displayFavoriteImage()}
-                        </TouchableOpacity>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity
+                                style={styles.favorite_container}
+                                onPress={() => this._toggleFavorite()}>
+                                {this._displayFavoriteImage()}
+                            </TouchableOpacity>
+                            <Icon
+                                raised
+                                reverse
+                                reverseColor='#FFF'
+                                name='pencil'
+                                type='font-awesome'
+                                color='#7FFFD4'
+                                size={15}
+                                onPress={() => this._updateSubject()}
+                            />
+                            <Icon
+                                raised
+                                reverse
+                                reverseColor='#FFF'
+                                name='trash'
+                                type='font-awesome'
+                                color='#DC143C'
+                                size={15}
+                                onPress={() => this._deleteSubject()}
+                            />
+                        </View>
                     </View>
                     <View style={styles.average_container}>
                         {this._displaySubjectAverage()}
                         <Text style={styles.default_text}>-     Number of notes : {subject.grades.length}</Text>
-                        <Icon
-                            raised
-                            reverse
-                            reverseColor='#FFF'
-                            name='trash'
-                            type='font-awesome'
-                            color='#DC143C'
-                            size={15}
-                            onPress={() => this._deleteSubject()}
-                        />
                     </View>
                     <GradeList style={{ flex: 5 }}
                         grades={this.state.grades}
                         navigation={this.props.navigation}
                     />
+                    <View style={{ flexDirection: 'row-reverse' }}>
+                        <Icon
+                            raised
+                            reverse
+                            reverseColor='#FFF'
+                            name='plus'
+                            type='font-awesome'
+                            color='#82e0aa'
+                            onPress={() => this._displayFormAddGrade()}
+                        />
+                    </View>
                 </ScrollView>
             )
         }
@@ -169,7 +202,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     favorite_container: {
-        alignItems: 'center',
+        marginLeft: 80
     },
     default_text: {
         marginLeft: 5,
