@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Button } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation'
 import HomePage from '../Components/HomePage'
 import SubjectDetail from '../Components/SubjectDetail'
@@ -17,10 +17,18 @@ const SubjectStackNavigator = createStackNavigator({
     }
   },
   SubjectDetail: {
-    screen: SubjectDetail
+    screen: SubjectDetail,
+    navigationOptions: {
+      headerLeft: null,
+      headerTitle: "Details"
+    }
   },
   GradeDetail: {
-    screen: GradeDetail
+    screen: GradeDetail,
+    navigationOptions: {
+      headerLeft: null,
+      headerTitle: "Details"
+    }
   },
   SubjectCreate: {
     screen: SubjectCreate,

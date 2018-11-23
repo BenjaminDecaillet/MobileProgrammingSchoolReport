@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity, Button } from 'react-native'
 import { getSubjectDetailFromApi, deleteSubjectFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import GradeList from './GradeList';
 
 class SubjectDetail extends Component {
@@ -13,26 +13,49 @@ class SubjectDetail extends Component {
             isLoading: false
         }
     }
+    //this._updateSubjectList = this._updateSubjectList.bind(this)
+
+    _goBack() {
+        this.props.navigation.state.params.fillSubjects(this.props.subjectsList);
+        this.props.navigation.goBack();
+    }
+
+    _fillGrades = (grades) => {
+        const action = { type: "INIT_GRADES", value: grades }
+        this.props.dispatch(action)
+    }
 
     componentDidMount() {
-        const favoritesSubjectIndex = this.props.favoritesSubject.findIndex(item => item.id === this.props.navigation.state.params.idSubject)
-        if (favoritesSubjectIndex !== -1) {
+        const subjectIndex = this.props.subjectsList.findIndex(item => item.id === this.props.navigation.state.params.idSubject)
+        if (subjectIndex !== -1) {
             //Already in favorites no need to call the api
             this.setState({
-                subject: this.props.favoritesSubject[favoritesSubjectIndex]
+                subject: this.props.subjectsList[subjectIndex]
             })
+            this._fillGrades(this.props.subjectsList[subjectIndex].grades)
             return
         }
+
         // Le sujet n'est pas dans nos favoris, on n'a pas son détail
         // On appelle l'API pour récupérer son détail
         this.setState({ isLoading: true })
         getSubjectDetailFromApi(this.props.navigation.state.params.idSubject).then(data => {
             this.setState({
                 subject: data,
-                grades: data.grades,
                 isLoading: false
             })
+            this._fillGrades(data.grades)
         })
+    }
+
+    _updateSubjectList = (name) => {
+        const subjectUpdate = { id: this.props.navigation.state.params.idSubject, name: name };
+        const action = { type: "UPDATE_SUBJECT", value: subjectUpdate }
+        this.props.dispatch(action)
+        this.setState({
+            subject: this.props.subjectsList[this.props.subjectsList.findIndex(item => item.id === this.props.navigation.state.params.idSubject)]
+        })
+
     }
 
     _displayLoading() {
@@ -47,6 +70,8 @@ class SubjectDetail extends Component {
 
     _deleteSubject() {
         deleteSubjectFromApi(this.props.navigation.state.params.idSubject);
+        const action = { type: "TOGGLE_SUBJECT", value: this.state.subject }
+        this.props.dispatch(action)
         this.props.navigation.goBack();
     }
 
@@ -54,7 +79,8 @@ class SubjectDetail extends Component {
         this.props.navigation.navigate('SubjectUpdate',
             {
                 id: this.props.navigation.state.params.idSubject,
-                name: this.state.subject.name
+                name: this.state.subject.name,
+                updateSubjectList: this._updateSubjectList
             })
     }
 
@@ -103,10 +129,20 @@ class SubjectDetail extends Component {
             return (
                 <ScrollView style={styles.scrollview_container}>
                     <View style={styles.header_container}>
-                        <Text style={styles.title_text}>{subject.name}</Text>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon
+                                name='arrow-left'
+                                type='font-awesome'
+                                color='#000'
+                                size={30}
+                                iconStyle={styles.backIcon}
+                                onPress={() => this._goBack()}
+                            />
+                            <Text style={styles.title_text}>{subject.name}</Text>
+                        </View>
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                             <TouchableOpacity
-                                style={styles.favorite_container}
+                                style={{ marginLeft: 80 }}
                                 onPress={() => this._toggleFavorite()}>
                                 {this._displayFavoriteImage()}
                             </TouchableOpacity>
@@ -137,7 +173,7 @@ class SubjectDetail extends Component {
                         <Text style={styles.default_text}>-     Number of notes : {subject.grades.length}</Text>
                     </View>
                     <GradeList style={{ flex: 5 }}
-                        grades={this.state.grades}
+                        fillGrades={this._fillGrades}
                         navigation={this.props.navigation}
                     />
                     <View style={{ flexDirection: 'row-reverse' }}>
@@ -201,8 +237,9 @@ const styles = StyleSheet.create({
         color: '#000000',
         textAlign: 'center'
     },
-    favorite_container: {
-        marginLeft: 80
+    backIcon: {
+        marginLeft: 5,
+        alignItems: 'center'
     },
     default_text: {
         marginLeft: 5,
@@ -217,7 +254,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.favoritesSubject
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList: state.subjects.subjectsList,
+        gradesList: state.grades.gradesList
     }
 }
 

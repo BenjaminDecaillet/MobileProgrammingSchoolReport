@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import { getGradeDetailFromApi, deleteGradeFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
+import { connect } from 'react-redux';
 import moment from 'moment'
 import numeral from 'numeral'
 
@@ -14,13 +15,15 @@ class GradeDetail extends Component {
         }
     }
 
+    _goBack() {
+        this.props.navigation.state.params.fillGrades(this.props.gradesList);
+        this.props.navigation.goBack();
+    }
+
     componentDidMount() {
-        this.setState({ isLoading: true })
-        getGradeDetailFromApi(this.props.navigation.state.params.idGrade).then(data => {
-            this.setState({
-                grade: data,
-                isLoading: false
-            })
+        const gradeIndex = this.props.gradesList.findIndex(item => item.id === this.props.navigation.state.params.idGrade)
+        this.setState({
+            grade: this.props.gradesList[gradeIndex]
         })
     }
 
@@ -36,7 +39,19 @@ class GradeDetail extends Component {
 
     _deleteGrade() {
         deleteGradeFromApi(this.props.navigation.state.params.idGrade);
+        const action = { type: "TOGGLE_GRADE", value: this.state.grade }
+        this.props.dispatch(action)
         this.props.navigation.goBack();
+    }
+
+    _updateGradesList = (name, value, weight) => {
+        const gradeUpdate = { id: this.props.navigation.state.params.idGrade, name: name, value: value, weight: weight };
+        const action = { type: "UPDATE_GRADE", params: gradeUpdate }
+        this.props.dispatch(action)
+        this.setState({
+            grade: this.props.gradesList[this.props.gradesList.findIndex(item => item.id === this.props.navigation.state.params.idGrade)]
+        })
+
     }
 
     _updateGrade() {
@@ -45,7 +60,8 @@ class GradeDetail extends Component {
                 id: this.state.grade.id,
                 name: this.state.grade.name,
                 value: this.state.grade.value,
-                weight: this.state.grade.weight
+                weight: this.state.grade.weight,
+                updateGradesList: this._updateGradesList
             })
     }
 
@@ -54,7 +70,17 @@ class GradeDetail extends Component {
         if (grade != undefined) {
             return (
                 <ScrollView style={styles.scrollview_container}>
-                    <Text style={styles.title_text}>{grade.name}</Text>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                            name='arrow-left'
+                            type='font-awesome'
+                            color='#000'
+                            size={30}
+                            iconStyle={styles.backIcon}
+                            onPress={() => this._goBack()}
+                        />
+                        <Text style={styles.title_text}>{grade.name}</Text>
+                    </View>
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={styles.average_text}>Value : {grade.value} / 5</Text>
                         <Text style={styles.average_text}>Weight : {grade.weight}</Text>
@@ -133,4 +159,12 @@ const styles = StyleSheet.create({
     }
 })
 
-export default GradeDetail;
+const mapStateToProps = (state) => {
+    return {
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList: state.subjects.subjectsList,
+        gradesList: state.grades.gradesList
+    }
+}
+
+export default connect(mapStateToProps)(GradeDetail);

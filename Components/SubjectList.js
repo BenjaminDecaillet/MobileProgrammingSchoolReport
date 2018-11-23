@@ -5,28 +5,21 @@ import { connect } from 'react-redux'
 
 class SubjectList extends Component {
 
+
     constructor(props) {
         super(props)
-        this.state = {
-            subjects: []
-        }
     }
 
     _displayDetailForSubject = (idSubject) => {
         // On a récupéré les informations de la navigation, on peut afficher le détail du sujet
-        this.props.navigation.navigate('SubjectDetail', { idSubject: idSubject })
-    }
-
-    __displayFormAddSubject = (idSubject) => {
-        // On a récupéré les informations de la navigation, on peut afficher le détail du sujet
-        this.props.navigation.navigate('SubjectDetail', { idSubject: idSubject })
+        this.props.navigation.navigate('SubjectDetail', { idSubject: idSubject , fillSubjects : this.props.fillSubjects})
     }
 
     render() {
         return (
                 <FlatList
                     style={styles.list}
-                    data={this.props.subjects}
+                    data={this.props.subjectsList}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <SubjectItem
@@ -48,7 +41,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.favoritesSubject
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList : state.subjects.subjectsList,
+        gradesList: state.grades.gradesList
     }
 }
 

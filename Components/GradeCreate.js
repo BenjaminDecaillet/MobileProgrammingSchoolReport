@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, Button } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { postGradeFromApi } from '../API/myAPI'
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import { postGradeFromApi } from '../API/myAPI';
+import { connect } from 'react-redux';
 
 class GradeCreate extends Component {
 
@@ -44,7 +45,11 @@ class GradeCreate extends Component {
         this.setState({
             subjectid: subjectid
         }, () => {
-            postGradeFromApi(this.state.name, this.state.value, this.state.weight, this.state.subjectid);
+            postGradeFromApi(this.state.name, this.state.value, this.state.weight, this.state.subjectid).then(data => {
+                const grade = JSON.parse(data._bodyText);
+                const action = { type: "TOGGLE_GRADE", value: grade }
+                this.props.dispatch(action)
+            });
         })
         this.props.navigation.goBack();
 
@@ -118,4 +123,11 @@ const styles = {
     }
 };
 
-export default GradeCreate;
+const mapStateToProps = (state) => {
+    return {
+        subjectsList: state.subjects.subjectsList,
+        gradesList: state.grades.gradesList
+    }
+}
+
+export default connect(mapStateToProps)(GradeCreate);

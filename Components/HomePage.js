@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Button, Icon } from 'react-native-elements';
 import { getStudentFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
 import SubjectList from './SubjectList';
+import { connect } from 'react-redux';
 
 class HomePage extends Component {
 
@@ -15,13 +16,13 @@ class HomePage extends Component {
             subjects: [],
             isLoading: false
         }
-        this._loadSubjects = this._loadSubjects.bind(this)
+        this._load = this._load.bind(this)
     }
     componentDidMount() {
-        this._getSubjects();
+        this._load();
     }
 
-    _loadStudent() {
+    _load() {
         this.setState({ isLoading: true })
         getStudentFromApi(this.state.studentId).then(data => {
             this.setState({
@@ -29,25 +30,17 @@ class HomePage extends Component {
                 isLoading: false
             })
         })
-    }
-
-    _loadSubjects() {
-        this.setState({ isLoading: true })
         getSubjectsFromStudentFromApi(this.state.studentId).then(data => {
             this.setState({
-                subjects: [...this.state.subjects, ...data],
                 isLoading: false
-            })
+            });
+            this._fillSubjects(data);
         })
     }
 
-    _getSubjects() {
-        this.setState({
-            subjects: []
-        }, () => {
-            this._loadStudent()
-            this._loadSubjects()
-        })
+    _fillSubjects = (subjects) => {
+        const action = { type: "INIT_SUBJECTS", value: subjects }
+        this.props.dispatch(action)
     }
 
     _displayLoading() {
@@ -71,7 +64,7 @@ class HomePage extends Component {
                 <Button
                     style={{ height: 50, }}
                     title='Show My Subjects'
-                    onPress={() => this._getSubjects()}
+                    onPress={() => this._fillSubjects(this.props.subjectsList)}
                     buttonStyle={{
                         backgroundColor: 'rgba(90, 154, 230, 1)',
                         borderColor: 'transparent',
@@ -79,9 +72,10 @@ class HomePage extends Component {
                     }}
                 />
                 <SubjectList
-                    subjects={this.state.subjects}
+                    fillSubjects={this._fillSubjects}
                     navigation={this.props.navigation}
                 />
+                
                 {this._displayLoading()}
                 <View style={{ flexDirection: 'row-reverse' }}>
                     <Icon
@@ -125,4 +119,12 @@ const styles = StyleSheet.create({
     }
 })
 
-export default HomePage;
+const mapStateToProps = (state) => {
+    return {
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList: state.subjects.subjectsList,
+        subject: state.subjects.subject
+    }
+}
+
+export default connect(mapStateToProps)(HomePage);

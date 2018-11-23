@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, Text, Button } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { putSubjectFromApi } from '../API/myAPI'
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import { putSubjectFromApi } from '../API/myAPI';
+import { connect } from 'react-redux';
 
 class SubjectUpdate extends Component {
 
@@ -23,7 +24,7 @@ class SubjectUpdate extends Component {
 
     _save() {
         putSubjectFromApi(this.state.subjectid, this.state.name);
-
+        this.props.navigation.state.params.updateSubjectList(this.state.name);
         this.props.navigation.goBack();
 
     }
@@ -93,4 +94,11 @@ const styles = {
     }
 };
 
-export default SubjectUpdate;
+const mapStateToProps = (state) => {
+    return {
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList: state.subjects.subjectsList
+    }
+}
+
+export default connect(mapStateToProps)(SubjectUpdate);

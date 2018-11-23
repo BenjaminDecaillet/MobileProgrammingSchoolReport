@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, Text, TextInput, Button } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { postSubjectFromApi } from '../API/myAPI'
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import { postSubjectFromApi } from '../API/myAPI';
+import { connect } from 'react-redux';
 
 class SubjectCreate extends Component {
 
@@ -18,7 +19,11 @@ class SubjectCreate extends Component {
         this.setState({
             studentid: studentid
         }, () => {
-            postSubjectFromApi(this.state.name, this.state.studentid);
+            postSubjectFromApi(this.state.name, this.state.studentid).then(data => {
+                const subject = JSON.parse(data._bodyText);
+                const action = { type: "TOGGLE_SUBJECT", value: subject }
+                this.props.dispatch(action)
+            });
         })
         this.props.navigation.goBack();
 
@@ -88,4 +93,10 @@ const styles = {
     }
 };
 
-export default SubjectCreate;
+const mapStateToProps = (state) => {
+    return {
+        subjectsList: state.subjects.subjectsList
+    }
+}
+
+export default connect(mapStateToProps)(SubjectCreate);

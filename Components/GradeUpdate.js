@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, Button } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements'
-import { putGradeFromApi } from '../API/myAPI'
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import { putGradeFromApi } from '../API/myAPI';
+import { connect } from 'react-redux';
 
 class GradeUpdate extends Component {
 
@@ -51,6 +52,7 @@ class GradeUpdate extends Component {
 
     _save() {
         putGradeFromApi(this.state.gradeid, this.state.name, this.state.value, this.state.weight);
+        this.props.navigation.state.params.updateGradesList(this.state.name, this.state.value, this.state.weight);
         this.props.navigation.goBack();
 
     }
@@ -126,4 +128,12 @@ const styles = {
     }
 };
 
-export default GradeUpdate;
+const mapStateToProps = (state) => {
+    return {
+        favoritesSubject: state.toggleFavorite.favoritesSubject,
+        subjectsList: state.subjects.subjectsList,
+        gradesList: state.subjects.gradesList
+    }
+}
+
+export default connect(mapStateToProps)(GradeUpdate);
