@@ -10,21 +10,16 @@ class SubjectCreate extends Component {
         super(props)
         this.state = {
             name: '',
-            studentid: 0,
             formDisabled: true
         }
     }
 
     _save(studentid) {
-        this.setState({
-            studentid: studentid
-        }, () => {
-            postSubjectFromApi(this.state.name, this.state.studentid).then(data => {
-                const subject = JSON.parse(data._bodyText);
-                const action = { type: "TOGGLE_SUBJECT", value: subject }
-                this.props.dispatch(action)
-            });
-        })
+        postSubjectFromApi(this.state.name, studentid, this.props.studentConnected.jwtToken).then(data => {
+            const subject = JSON.parse(data._bodyText);
+            const action = { type: "TOGGLE_SUBJECT", value: subject }
+            this.props.dispatch(action)
+        });
         this.props.navigation.goBack();
 
     }
@@ -46,7 +41,7 @@ class SubjectCreate extends Component {
     }
 
     render() {
-        const studentid = this.props.navigation.state.params.studentid;
+        const studentid = this.props.studentInfo.id;
         return (
             <View style={styles.wrapper}>
                 <View>
@@ -95,7 +90,9 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        subjectsList: state.subjects.subjectsList
+        subjectsList: state.subjects.subjectsList,
+        studentConnected: state.student.studentConnected,
+        studentInfo: state.student.studentInfo
     }
 }
 

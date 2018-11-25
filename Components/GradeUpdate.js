@@ -51,7 +51,7 @@ class GradeUpdate extends Component {
     }
 
     _save() {
-        putGradeFromApi(this.state.gradeid, this.state.name, this.state.value, this.state.weight);
+        putGradeFromApi(this.state.gradeid, this.state.name, this.state.value, this.state.weight, this.props.studentConnected.jwtToken);
         this.props.navigation.state.params.updateGradesList(this.state.name, this.state.value, this.state.weight);
         this.props.navigation.goBack();
 
@@ -132,7 +132,8 @@ const mapStateToProps = (state) => {
     return {
         favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
-        gradesList: state.subjects.gradesList
+        gradesList: state.subjects.gradesList,
+        studentConnected: state.student.studentConnected
     }
 }
 

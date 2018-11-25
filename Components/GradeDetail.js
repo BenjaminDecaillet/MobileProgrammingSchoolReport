@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import { getGradeDetailFromApi, deleteGradeFromApi } from '../API/myAPI'
+import { deleteGradeFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import moment from 'moment'
@@ -38,9 +38,14 @@ class GradeDetail extends Component {
     }
 
     _deleteGrade() {
-        deleteGradeFromApi(this.props.navigation.state.params.idGrade);
+        deleteGradeFromApi(this.props.navigation.state.params.idGrade, this.props.studentConnected.jwtToken);
         const action = { type: "TOGGLE_GRADE", value: this.state.grade }
         this.props.dispatch(action)
+        getSubjectDetailFromApi(this.props.currentSubject.id, this.props.studentConnected.jwtToken).then(data => {
+            const subject = data
+            const action2 = { type: "INIT_CURRENTSUBJECT", value: subject }
+            this.props.dispatch(action2)
+        })
         this.props.navigation.goBack();
     }
 
@@ -163,7 +168,9 @@ const mapStateToProps = (state) => {
     return {
         favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
-        gradesList: state.grades.gradesList
+        gradesList: state.grades.gradesList,
+        studentConnected: state.student.studentConnected,
+        currentSubject: state.subjects.currentSubject
     }
 }
 

@@ -1,40 +1,36 @@
 import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator, YellowBox } from 'react-native';
 import React, { Component } from 'react';
 import { Button, Icon } from 'react-native-elements';
-import { getStudentFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
+import { getStudentByUsernameFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
 import SubjectList from './SubjectList';
 import { connect } from 'react-redux';
 
 class HomePage extends Component {
-
-
     constructor(props) {
         super(props)
         this.state = {
-            studentId: 2,
-            student: '',
-            subjects: [],
+            //studentId: 2,
+            //student: '',
+            //subjects: [],
             isLoading: false
         }
-        this._load = this._load.bind(this)
-    }
-    componentDidMount() {
-        this._load();
     }
 
-    _load() {
+    componentDidMount() {
+        this._getStudentInfo();
+    }
+
+    _getStudentInfo = () => {
         this.setState({ isLoading: true })
-        getStudentFromApi(this.state.studentId).then(data => {
+        getStudentByUsernameFromApi(this.props.studentConnected.username, this.props.studentConnected.jwtToken).then(data => {
+            const action = { type: 'COMPLETE_STUDENT', value: data }
+            this.props.dispatch(action)
+            getSubjectsFromStudentFromApi(this.props.studentInfo.id, this.props.studentConnected.jwtToken).then(data => {
+                this._fillSubjects(data);
+            })
             this.setState({
-                student: data.username,
                 isLoading: false
             })
-        })
-        getSubjectsFromStudentFromApi(this.state.studentId).then(data => {
-            this.setState({
-                isLoading: false
-            });
-            this._fillSubjects(data);
         })
     }
 
@@ -54,28 +50,18 @@ class HomePage extends Component {
     }
 
     _displayFormAddSubject = () => {
-        this.props.navigation.navigate('SubjectCreate', { studentid: this.state.studentId })
+        this.props.navigation.navigate('SubjectCreate', { studentid: this.props.studentInfo.id })
     }
 
     render() {
         return (
             <View style={styles.main_container}>
-                <Text style={styles.title_text}>{this.state.student} Subjects </Text>
-                <Button
-                    style={{ height: 50, }}
-                    title='Show My Subjects'
-                    onPress={() => this._fillSubjects(this.props.subjectsList)}
-                    buttonStyle={{
-                        backgroundColor: 'rgba(90, 154, 230, 1)',
-                        borderColor: 'transparent',
-                        borderWidth: 0, borderRadius: 30
-                    }}
-                />
+                <Text style={styles.title_text}>{this.props.studentConnected.username} Subjects </Text>
                 <SubjectList
                     fillSubjects={this._fillSubjects}
                     navigation={this.props.navigation}
                 />
-                
+
                 {this._displayLoading()}
                 <View style={{ flexDirection: 'row-reverse' }}>
                     <Icon
@@ -123,7 +109,9 @@ const mapStateToProps = (state) => {
     return {
         favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
-        subject: state.subjects.subject
+        subject: state.subjects.subject,
+        studentConnected: state.student.studentConnected,
+        studentInfo:  state.student.studentInfo
     }
 }
 

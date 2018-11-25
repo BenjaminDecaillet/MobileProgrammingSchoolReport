@@ -43,7 +43,6 @@ class SubjectItem extends Component {
 
                 <Image
                     style={styles.image}
-                //source={{ uri: getImageFromApi(subject.poster_path) }}
                 />
                 <View style={styles.content_container}>
                     <View style={styles.header_container}>

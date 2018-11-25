@@ -23,7 +23,7 @@ class SubjectUpdate extends Component {
     }
 
     _save() {
-        putSubjectFromApi(this.state.subjectid, this.state.name);
+        putSubjectFromApi(this.state.subjectid, this.state.name, this.props.studentConnected.jwtToken);
         this.props.navigation.state.params.updateSubjectList(this.state.name);
         this.props.navigation.goBack();
 
@@ -97,7 +97,8 @@ const styles = {
 const mapStateToProps = (state) => {
     return {
         favoritesSubject: state.toggleFavorite.favoritesSubject,
-        subjectsList: state.subjects.subjectsList
+        subjectsList: state.subjects.subjectsList,
+        studentConnected: state.student.studentConnected
     }
 }
 

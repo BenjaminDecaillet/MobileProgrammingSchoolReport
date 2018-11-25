@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity, Button } from 'react-native'
-import { getSubjectDetailFromApi, deleteSubjectFromApi } from '../API/myAPI'
+import { getSubjectDetailFromApi, deleteSubjectFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import GradeList from './GradeList';
@@ -9,14 +9,14 @@ class SubjectDetail extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            subject: undefined,
             isLoading: false
         }
     }
-    //this._updateSubjectList = this._updateSubjectList.bind(this)
 
     _goBack() {
-        this.props.navigation.state.params.fillSubjects(this.props.subjectsList);
+        getSubjectsFromStudentFromApi(this.props.studentInfo.id, this.props.studentConnected.jwtToken).then(data => {
+            this.props.navigation.state.params.fillSubjects(data);
+        })
         this.props.navigation.goBack();
     }
 
@@ -26,22 +26,9 @@ class SubjectDetail extends Component {
     }
 
     componentDidMount() {
-        const subjectIndex = this.props.subjectsList.findIndex(item => item.id === this.props.navigation.state.params.idSubject)
-        if (subjectIndex !== -1) {
-            //Already in favorites no need to call the api
-            this.setState({
-                subject: this.props.subjectsList[subjectIndex]
-            })
-            this._fillGrades(this.props.subjectsList[subjectIndex].grades)
-            return
-        }
-
-        // Le sujet n'est pas dans nos favoris, on n'a pas son détail
-        // On appelle l'API pour récupérer son détail
         this.setState({ isLoading: true })
-        getSubjectDetailFromApi(this.props.navigation.state.params.idSubject).then(data => {
+        getSubjectDetailFromApi(this.props.navigation.state.params.idSubject, this.props.studentConnected.jwtToken).then(data => {
             this.setState({
-                subject: data,
                 isLoading: false
             })
             this._fillGrades(data.grades)
@@ -52,9 +39,9 @@ class SubjectDetail extends Component {
         const subjectUpdate = { id: this.props.navigation.state.params.idSubject, name: name };
         const action = { type: "UPDATE_SUBJECT", value: subjectUpdate }
         this.props.dispatch(action)
-        this.setState({
-            subject: this.props.subjectsList[this.props.subjectsList.findIndex(item => item.id === this.props.navigation.state.params.idSubject)]
-        })
+        const subject = this.props.subjectsList[this.props.subjectsList.findIndex(item => item.id === this.props.navigation.state.params.idSubject)]
+        const action2 = { type: "INIT_CURRENTSUBJECT", value: subject }
+        this.props.dispatch(action2)
 
     }
 
@@ -69,7 +56,7 @@ class SubjectDetail extends Component {
     }
 
     _deleteSubject() {
-        deleteSubjectFromApi(this.props.navigation.state.params.idSubject);
+        deleteSubjectFromApi(this.props.navigation.state.params.idSubject, this.props.studentConnected.jwtToken);
         const action = { type: "TOGGLE_SUBJECT", value: this.state.subject }
         this.props.dispatch(action)
         this.props.navigation.goBack();
@@ -79,7 +66,7 @@ class SubjectDetail extends Component {
         this.props.navigation.navigate('SubjectUpdate',
             {
                 id: this.props.navigation.state.params.idSubject,
-                name: this.state.subject.name,
+                name: this.props.currentSubject.name,
                 updateSubjectList: this._updateSubjectList
             })
     }
@@ -103,7 +90,7 @@ class SubjectDetail extends Component {
     }
 
     _displaySubjectAverage() {
-        const { subject } = this.state
+        const subject = this.props.currentSubject
         if (subject != undefined) {
             let subjectAverage = 0;
             let value = 0;
@@ -120,11 +107,11 @@ class SubjectDetail extends Component {
     }
 
     _displayFormAddGrade = () => {
-        this.props.navigation.navigate('GradeCreate', { subjectid: this.props.navigation.state.params.idSubject })
+        this.props.navigation.navigate('GradeCreate')
     }
 
     _displaySubject() {
-        const { subject } = this.state
+        const subject = this.props.currentSubject
         if (subject != undefined) {
             return (
                 <ScrollView style={styles.scrollview_container}>
@@ -256,7 +243,10 @@ const mapStateToProps = (state) => {
     return {
         favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
-        gradesList: state.grades.gradesList
+        currentSubject: state.subjects.currentSubject,
+        gradesList: state.grades.gradesList,
+        studentConnected: state.student.studentConnected,
+        studentInfo: state.student.studentInfo
     }
 }
 

@@ -1,4 +1,4 @@
-const initialState = { subjectsList: [] }
+const initialState = { subjectsList: [], currentSubject: undefined }
 
 function subjects(state = initialState, action) {
   let nextState
@@ -9,6 +9,13 @@ function subjects(state = initialState, action) {
         subjectsList: [...action.value]
       }
       return nextState || state
+      
+    case 'INIT_CURRENTSUBJECT':
+    nextState = {
+      ...state,
+      currentSubject: action.value
+    }
+    return nextState || state
     case 'UPDATE_SUBJECT':
       const subjecToUpdatetIndex = state.subjectsList.findIndex(item => item.id === action.value.id)
       state.subjectsList[subjecToUpdatetIndex].name = action.value.name;

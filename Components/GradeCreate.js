@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
-import { postGradeFromApi } from '../API/myAPI';
+import { postGradeFromApi, getSubjectDetailFromApi } from '../API/myAPI';
 import { connect } from 'react-redux';
 
 class GradeCreate extends Component {
@@ -12,44 +12,29 @@ class GradeCreate extends Component {
             name: '',
             value: 0,
             weight: 0,
-            subjectid: 0,
-            formDisabled: true
+            formDisabled: true,
+            fieldsEmpty: false
         }
     }
 
-    _validationName() {
-        if (this.state.name == '') {
+    _validation = (field) => {
+        if (this.state[field] == '' && this.state.fieldsEmpty) {
             return (
-                <FormValidationMessage>Name required</FormValidationMessage>
+                <FormValidationMessage>{field} required</FormValidationMessage>
             )
         }
     }
 
-    _validationValue() {
-        if (this.state.value == 0 || this.state.value < 0) {
-            return (
-                <FormValidationMessage>Value required different from 0</FormValidationMessage>
-            )
-        }
-    }
-
-    _validationWeight() {
-        if (this.state.weight == 0 || this.state.weight < 0) {
-            return (
-                <FormValidationMessage>Weight required different from 0</FormValidationMessage>
-            )
-        }
-    }
-
-    _save(subjectid) {
-        this.setState({
-            subjectid: subjectid
-        }, () => {
-            postGradeFromApi(this.state.name, this.state.value, this.state.weight, this.state.subjectid).then(data => {
-                const grade = JSON.parse(data._bodyText);
-                const action = { type: "TOGGLE_GRADE", value: grade }
-                this.props.dispatch(action)
-            });
+    _save() {
+        postGradeFromApi(this.state.name, this.state.value, this.state.weight, this.props.currentSubject.id, this.props.studentConnected.jwtToken).then(data => {
+            const grade = JSON.parse(data._bodyText);
+            const action = { type: "TOGGLE_GRADE", value: grade }
+            this.props.dispatch(action)
+        });
+        getSubjectDetailFromApi(this.props.currentSubject.id, this.props.studentConnected.jwtToken).then(data => {
+            const subject = data
+            const action2 = { type: "INIT_CURRENTSUBJECT", value: subject }
+            this.props.dispatch(action2)
         })
         this.props.navigation.goBack();
 
@@ -61,10 +46,14 @@ class GradeCreate extends Component {
                 formDisabled: false
             })
         }
+        else {
+            this.setState({
+                fieldsEmpty: true
+            })
+        }
     }
 
     render() {
-        const subjectid = this.props.navigation.state.params.subjectid;
         return (
             <View style={styles.wrapper}>
                 <View>
@@ -72,19 +61,19 @@ class GradeCreate extends Component {
                     <FormInput
                         placeholder="Grade name"
                         onChangeText={(name) => this.setState({ name: name })} />
-                    {this._validationName()}
+                    {this._validation('name')}
                     <FormLabel>Grade Value</FormLabel>
                     <FormInput
                         placeholder="Grade value"
                         keyboardType="numeric"
                         onChangeText={(value) => this.setState({ value: value })} />
-                    {this._validationValue()}
+                    {this._validation('value')}
                     <FormLabel>Grade Weight</FormLabel>
                     <FormInput
                         placeholder="Grade weight"
                         keyboardType="number-pad"
                         onChangeText={(weight) => this.setState({ weight: weight })} />
-                    {this._validationWeight()}
+                    {this._validation('weight')}
 
                 </View>
                 <View>
@@ -100,7 +89,7 @@ class GradeCreate extends Component {
                         <Button
                             disabled={this.state.formDisabled}
                             title="save"
-                            block onPress={() => this._save(subjectid)}>
+                            block onPress={() => this._save()}>
                             <Text>Save</Text>
                         </Button>
                     </View>
@@ -126,7 +115,9 @@ const styles = {
 const mapStateToProps = (state) => {
     return {
         subjectsList: state.subjects.subjectsList,
-        gradesList: state.grades.gradesList
+        gradesList: state.grades.gradesList,
+        studentConnected: state.student.studentConnected,
+        currentSubject: state.subjects.currentSubject
     }
 }
 
