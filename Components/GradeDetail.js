@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import { deleteGradeFromApi, getSubjectDetailFromApi} from '../API/myAPI'
+import { deleteGradeFromApi, getSubjectDetailFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
-import moment from 'moment'
-import numeral from 'numeral'
 
 class GradeDetail extends Component {
     constructor(props) {
@@ -72,7 +70,7 @@ class GradeDetail extends Component {
                 value: this.state.grade.value,
                 weight: this.state.grade.weight,
                 updateGradesList: this._updateGradesList,
-                displaySubjectAverage : this._updateAverage
+                displaySubjectAverage: this._updateAverage
             })
     }
 
@@ -172,7 +170,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
         gradesList: state.grades.gradesList,
         studentConnected: state.student.studentConnected,

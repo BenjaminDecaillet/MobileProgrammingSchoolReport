@@ -15,7 +15,7 @@ class ProfileDetail extends Component {
         const action = { type: "LOGIN_LOGOUT", value: user }
         this.props.dispatch(action)
         const action2 = { type: 'COMPLETE_STUDENT', value: user }
-            this.props.dispatch(action2)
+        this.props.dispatch(action2)
         this.props.navigation.navigate('Login')
     }
 
@@ -25,7 +25,7 @@ class ProfileDetail extends Component {
                 <Text style={styles.title_text}> {this.props.studentInfo.username}</Text>
                 <Text style={styles.default_text}> {this.props.studentInfo.email}</Text>
                 <Text style={styles.default_text}> {this.props.studentInfo.role}</Text>
-                <View style={{margin:10}}>
+                <View style={{ margin: 10 }}>
                     <Button
                         title="logout"
                         block onPress={() => this._logout()}>

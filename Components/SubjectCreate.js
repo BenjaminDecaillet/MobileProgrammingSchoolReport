@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, View, Text, TextInput, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 import { postSubjectFromApi } from '../API/myAPI';
 import { connect } from 'react-redux';

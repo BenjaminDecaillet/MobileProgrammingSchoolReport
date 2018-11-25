@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import MaterialCommIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 class SubjectItem extends Component {
 
-    _displayFavoriteImage() {
-        if (this.props.isSubjectFavorite) {
-            return (
-                <Image
-                    style={styles.favorite_image}
-                    source={require('../Images/ic_favorite.png')}
-                />
-            )
-        }
-    }
 
     _displaySubjectAverage() {
         const { subject } = this.props
@@ -41,12 +32,11 @@ class SubjectItem extends Component {
                 style={styles.main_container}
                 onPress={() => displayDetailForSubject(subject.id)}>
 
-                <Image
-                    style={styles.image}
+                <MaterialCommIcon
+                    name='book-open-variant' size={50}
                 />
                 <View style={styles.content_container}>
                     <View style={styles.header_container}>
-                        {this._displayFavoriteImage()}
                         <Text style={styles.title_text}>{subject.name}</Text>
                     </View>
                     {this._displaySubjectAverage()}
@@ -60,12 +50,6 @@ const styles = StyleSheet.create({
     main_container: {
         height: 80,
         flexDirection: 'row'
-    },
-    image: {
-        width: 120,
-        height: 70,
-        margin: 5,
-        backgroundColor: 'gray'
     },
     content_container: {
         flex: 1,

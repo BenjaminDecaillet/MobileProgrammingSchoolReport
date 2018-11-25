@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 import { postLogin, getStudentByUsernameFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI';
 import { connect } from 'react-redux';
@@ -20,9 +20,6 @@ class Login extends Component {
             isAuthenticated: false,
             isLoading: false
         }
-    }
-    componentDidMount() {
-        console.log('login mounted')
     }
 
     _fillSubjects = (subjects) => {

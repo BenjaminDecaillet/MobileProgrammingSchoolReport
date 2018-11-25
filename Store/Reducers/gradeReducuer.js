@@ -23,14 +23,12 @@ function grades(state = initialState, action) {
     case 'TOGGLE_GRADE':
       const gradeIndex = state.gradesList.findIndex(item => item.id === action.value.id)
       if (gradeIndex !== -1) {
-        // Le sujet est déjà dans la liste des sujets, on le supprime de la liste
         nextState = {
           ...state,
           gradesList: state.gradesList.filter((item, index) => index !== gradeIndex)
         }
       }
       else {
-        // Le sujet n'est pas dans la liste de sujet, on l'ajoute à la liste
         nextState = {
           ...state,
           gradesList: [...state.gradesList, action.value]

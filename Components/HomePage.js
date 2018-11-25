@@ -1,7 +1,6 @@
-import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator, YellowBox } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import React, { Component } from 'react';
-import { Button, Icon } from 'react-native-elements';
-import { getStudentByUsernameFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
+import { Icon } from 'react-native-elements';
 import SubjectList from './SubjectList';
 import { connect } from 'react-redux';
 
@@ -9,9 +8,6 @@ class HomePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            //studentId: 2,
-            //student: '',
-            //subjects: [],
             isLoading: false
         }
     }
@@ -21,7 +17,7 @@ class HomePage extends Component {
         const action = { type: "INIT_SUBJECTS", value: subjects }
         this.props.dispatch(action)
     }
-    
+
     _displayLoading() {
         if (this.state.isLoading) {
             return (
@@ -90,11 +86,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
         subject: state.subjects.subject,
         studentConnected: state.student.studentConnected,
-        studentInfo:  state.student.studentInfo
+        studentInfo: state.student.studentInfo
     }
 }
 

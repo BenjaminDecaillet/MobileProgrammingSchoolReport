@@ -5,14 +5,12 @@ function student(state = initialState, action) {
     switch (action.type) {
         case 'LOGIN_LOGOUT':
             if (state.studentConnected === undefined) {
-                // Nobody's connected , add the attempted connection to the state
                 nextState = {
                     ...state,
                     studentConnected: action.value
                 }
             }
             else {
-                // Logout the student
                 nextState = {
                     ...state,
                     studentConnected: action.value

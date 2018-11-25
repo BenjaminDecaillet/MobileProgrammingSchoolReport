@@ -12,7 +12,7 @@ class GradeList extends Component {
     }
 
     _displayDetailForGrade = (idGrade) => {
-        this.props.navigation.navigate('GradeDetail', { idGrade: idGrade , fillGrades : this.props.fillGrades, displaySubjectAverage: this._updateAverage})
+        this.props.navigation.navigate('GradeDetail', { idGrade: idGrade, fillGrades: this.props.fillGrades, displaySubjectAverage: this._updateAverage })
     }
 
     render() {
@@ -40,9 +40,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
-        subjectsList : state.subjects.subjectsList,
-        gradesList : state.grades.gradesList
+        subjectsList: state.subjects.subjectsList,
+        gradesList: state.grades.gradesList
     }
 }
 

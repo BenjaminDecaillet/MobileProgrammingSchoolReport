@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, View, Text, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 import { putSubjectFromApi } from '../API/myAPI';
 import { connect } from 'react-redux';
@@ -96,7 +96,6 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
         studentConnected: state.student.studentConnected
     }

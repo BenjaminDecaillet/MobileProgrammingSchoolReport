@@ -28,14 +28,12 @@ function subjects(state = initialState, action) {
     case 'TOGGLE_SUBJECT':
       const subjectIndex = state.subjectsList.findIndex(item => item.id === action.value.id)
       if (subjectIndex !== -1) {
-        // Le sujet est déjà dans la liste des sujets, on le supprime de la liste
         nextState = {
           ...state,
           subjectsList: state.subjectsList.filter((item, index) => index !== subjectIndex)
         }
       }
       else {
-        // Le sujet n'est pas dans la liste de sujet, on l'ajoute à la liste
         nextState = {
           ...state,
           subjectsList: [...state.subjectsList, action.value]

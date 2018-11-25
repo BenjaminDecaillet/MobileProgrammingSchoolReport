@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity, Button } from 'react-native'
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import { getSubjectDetailFromApi, deleteSubjectFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI'
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -57,7 +57,8 @@ class SubjectDetail extends Component {
 
     _deleteSubject() {
         deleteSubjectFromApi(this.props.navigation.state.params.idSubject, this.props.studentConnected.jwtToken);
-        const action = { type: "TOGGLE_SUBJECT", value: this.state.subject }
+        const subjectTemp = { id : this.props.navigation.state.params.idSubject}
+        const action = { type: "TOGGLE_SUBJECT", value: subjectTemp }
         this.props.dispatch(action)
         this.props.navigation.goBack();
     }
@@ -69,24 +70,6 @@ class SubjectDetail extends Component {
                 name: this.props.currentSubject.name,
                 updateSubjectList: this._updateSubjectList
             })
-    }
-
-    _toggleFavorite() {
-        const action = { type: "TOGGLE_FAVORITE", value: this.state.subject }
-        this.props.dispatch(action)
-    }
-
-    _displayFavoriteImage() {
-        var sourceImage = require('../Images/ic_favorite_border.png')
-        if (this.props.favoritesSubject.findIndex(item => item.id === this.state.subject.id) !== -1) {
-            sourceImage = require('../Images/ic_favorite.png')
-        }
-        return (
-            <Image
-                style={styles.favorite_image}
-                source={sourceImage}
-            />
-        )
     }
 
     _displaySubjectAverage = () => {
@@ -128,21 +111,19 @@ class SubjectDetail extends Component {
                             <Text style={styles.title_text}>{subject.name}</Text>
                         </View>
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                            <TouchableOpacity
-                                style={{ marginLeft: 80 }}
-                                onPress={() => this._toggleFavorite()}>
-                                {this._displayFavoriteImage()}
-                            </TouchableOpacity>
-                            <Icon
-                                raised
-                                reverse
-                                reverseColor='#FFF'
-                                name='pencil'
-                                type='font-awesome'
-                                color='#7FFFD4'
-                                size={15}
-                                onPress={() => this._updateSubject()}
-                            />
+                            
+                            <View style={{ marginLeft: 100 }}>
+                                <Icon
+                                    raised
+                                    reverse
+                                    reverseColor='#FFF'
+                                    name='pencil'
+                                    type='font-awesome'
+                                    color='#7FFFD4'
+                                    size={15}
+                                    onPress={() => this._updateSubject()}
+                                />
+                            </View>
                             <Icon
                                 raised
                                 reverse
@@ -242,7 +223,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
         currentSubject: state.subjects.currentSubject,
         gradesList: state.grades.gradesList,

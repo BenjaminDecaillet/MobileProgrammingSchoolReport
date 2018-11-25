@@ -135,7 +135,6 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        favoritesSubject: state.toggleFavorite.favoritesSubject,
         subjectsList: state.subjects.subjectsList,
         gradesList: state.subjects.gradesList,
         studentConnected: state.student.studentConnected

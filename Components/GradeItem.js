@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import MaterialCommIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class GradeItem extends Component {
     render() {
@@ -9,6 +10,9 @@ class GradeItem extends Component {
                 style={styles.main_container}
                 onPress={() => displayDetailForGrade(grade.id)}>
 
+                <MaterialCommIcon
+                    name='note-outline' size={50}
+                />
                 <View style={styles.content_container}>
                     <View style={styles.header_container}>
                         <Text style={styles.title_text}>{grade.name}</Text>

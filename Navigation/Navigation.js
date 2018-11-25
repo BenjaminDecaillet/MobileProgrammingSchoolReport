@@ -1,5 +1,4 @@
-import React from 'react'
-import { StyleSheet, Button, Image } from 'react-native';
+import React from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import HomePage from '../Components/HomePage';
