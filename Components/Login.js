@@ -16,6 +16,7 @@ class Login extends Component {
             password: '',
             fieldsEmpty: false,
             ErrorAuthentication: false,
+            FalseUserNameOrPwd: false,
             isAuthenticated: false,
             isLoading: false
         }
@@ -53,7 +54,7 @@ class Login extends Component {
                         }
                         const action = { type: "LOGIN_LOGOUT", value: user }
                         this.props.dispatch(action)
-                        this.setState({ username: '', password: '', ErrorAuthentication: false, isAuthenticated: true },
+                        this.setState({ username: '', password: '', ErrorAuthentication: false, FalseUserNameOrPwd: false, isAuthenticated: true },
                             function () {
                                 if (this.state.isAuthenticated) {
                                     getStudentByUsernameFromApi(this.props.studentConnected.username, this.props.studentConnected.jwtToken).then(data => {
@@ -69,6 +70,9 @@ class Login extends Component {
                                     this.setState({ ErrorAuthentication: true })
                                 }
                             });
+                    }
+                    else {
+                        this.setState({ ErrorAuthentication: true, FalseUserNameOrPwd: true })
                     }
                 });
             this.setState({
@@ -95,9 +99,16 @@ class Login extends Component {
 
     _errorAuthentication = () => {
         if (this.state.ErrorAuthentication) {
-            return (
-                <FormValidationMessage>Error during authentication</FormValidationMessage>
-            )
+            if (this.state.FalseUserNameOrPwd) {
+                return (
+                    <FormValidationMessage>Error during authentication Incorrect Username or Password</FormValidationMessage>
+                )
+            }
+            else {
+                return (
+                    <FormValidationMessage>Error during authentication</FormValidationMessage>
+                )
+            }
         }
     }
 
