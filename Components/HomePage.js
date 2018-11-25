@@ -16,29 +16,12 @@ class HomePage extends Component {
         }
     }
 
-    componentDidMount() {
-        this._getStudentInfo();
-    }
-
-    _getStudentInfo = () => {
-        this.setState({ isLoading: true })
-        getStudentByUsernameFromApi(this.props.studentConnected.username, this.props.studentConnected.jwtToken).then(data => {
-            const action = { type: 'COMPLETE_STUDENT', value: data }
-            this.props.dispatch(action)
-            getSubjectsFromStudentFromApi(this.props.studentInfo.id, this.props.studentConnected.jwtToken).then(data => {
-                this._fillSubjects(data);
-            })
-            this.setState({
-                isLoading: false
-            })
-        })
-    }
 
     _fillSubjects = (subjects) => {
         const action = { type: "INIT_SUBJECTS", value: subjects }
         this.props.dispatch(action)
     }
-
+    
     _displayLoading() {
         if (this.state.isLoading) {
             return (

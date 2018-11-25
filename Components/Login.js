@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
-import { postLogin } from '../API/myAPI';
+import { postLogin, getStudentByUsernameFromApi, getSubjectsFromStudentFromApi } from '../API/myAPI';
 import { connect } from 'react-redux';
 
 class Login extends Component {
+    static navigationOptions = {
+        tabBarVisible: false
+    }
 
     constructor(props) {
         super(props)
@@ -13,16 +16,32 @@ class Login extends Component {
             password: '',
             fieldsEmpty: false,
             ErrorAuthentication: false,
-            isAuthenticated: false
+            isAuthenticated: false,
+            isLoading: false
+        }
+    }
+    componentDidMount() {
+        console.log('login mounted')
+    }
+
+    _fillSubjects = (subjects) => {
+        const action = { type: "INIT_SUBJECTS", value: subjects }
+        this.props.dispatch(action)
+    }
+
+    _displayLoading() {
+        if (this.state.isLoading) {
+            return (
+                <View style={styles.loading_container}>
+                    <ActivityIndicator size='large' />
+                </View>
+            )
         }
     }
 
     _login = () => {
         if (this.state.username !== '' && this.state.password !== '') {
-            const user = {
-                username: this.state.username,
-                password: this.state.password
-            }
+            this.setState({ isLoading: true })
             postLogin(this.state.username, this.state.password)
                 .then(data => {
                     const jwtToken = data.headers.get('Authorization');
@@ -32,13 +51,19 @@ class Login extends Component {
                             password: this.state.password,
                             jwtToken: jwtToken
                         }
-                        //console.log(user)
                         const action = { type: "LOGIN_LOGOUT", value: user }
                         this.props.dispatch(action)
-                        this.setState({ ErrorAuthentication: false, isAuthenticated: true },
+                        this.setState({ username: '', password: '', ErrorAuthentication: false, isAuthenticated: true },
                             function () {
                                 if (this.state.isAuthenticated) {
-                                    this.props.navigation.navigate('HomePage')
+                                    getStudentByUsernameFromApi(this.props.studentConnected.username, this.props.studentConnected.jwtToken).then(data => {
+                                        const action2 = { type: 'COMPLETE_STUDENT', value: data }
+                                        this.props.dispatch(action2)
+                                        getSubjectsFromStudentFromApi(this.props.studentInfo.id, this.props.studentConnected.jwtToken).then(data => {
+                                            this._fillSubjects(data);
+                                        })
+                                    })
+                                    this.props.navigation.navigate('Subjects')
                                 }
                                 else {
                                     this.setState({ ErrorAuthentication: true })
@@ -46,6 +71,9 @@ class Login extends Component {
                             });
                     }
                 });
+            this.setState({
+                isLoading: false
+            })
         }
         else {
             this.setState({ fieldsEmpty: true })
@@ -53,8 +81,7 @@ class Login extends Component {
     }
 
     _logout = () => {
-        console.log('user logout ' + this.props.studentConnected.username)
-        const action = { type: "LOGIN_LOGOUT", value: '' }
+        const action = { type: "LOGIN_LOGOUT", value: undefined }
         this.props.dispatch(action)
     }
 
@@ -82,6 +109,7 @@ class Login extends Component {
                     <FormInput
                         placeholder="Username"
                         autoCapitalize='none'
+                        value={this.state.username}
                         onChangeText={(username) => this.setState({ username: username })} />
                     {this._emptyFields('username')}
                     <FormLabel>Password</FormLabel>
@@ -89,19 +117,20 @@ class Login extends Component {
                         placeholder="Password"
                         secureTextEntry={true}
                         autoCapitalize='none'
+                        value={this.state.password}
                         onChangeText={(password) => this.setState({ password: password })} />
                     {this._emptyFields('password')}
-                    {this._errorAuthentication()}
+
                 </View>
-                <View>
-                    <View style={{ margin: 10 }} >
-                        <Button
-                            title="login"
-                            block onPress={() => this._login('username')}>
-                            <Text>Login</Text>
-                        </Button>
-                    </View>
+                <View style={{ margin: 10 }}>
+                    <Button
+                        title="login"
+                        block onPress={() => this._login()}>
+                        <Text>Login</Text>
+                    </Button>
                 </View>
+                {this._errorAuthentication()}
+                {this._displayLoading()}
             </View>
         );
     }
@@ -122,7 +151,8 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        studentConnected: state.student.studentConnected
+        studentConnected: state.student.studentConnected,
+        studentInfo: state.student.studentInfo
     }
 }
 

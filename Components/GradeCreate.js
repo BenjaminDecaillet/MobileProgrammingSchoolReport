@@ -36,6 +36,7 @@ class GradeCreate extends Component {
             const action2 = { type: "INIT_CURRENTSUBJECT", value: subject }
             this.props.dispatch(action2)
         })
+        this.props.navigation.state.params.displaySubjectAverage;
         this.props.navigation.goBack();
 
     }

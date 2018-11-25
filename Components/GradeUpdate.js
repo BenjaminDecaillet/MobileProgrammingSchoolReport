@@ -50,9 +50,14 @@ class GradeUpdate extends Component {
         }
     }
 
+    _updateAverage = () => {
+        this.props.navigation.state.params.displaySubjectAverage()
+    }
+
     _save() {
         putGradeFromApi(this.state.gradeid, this.state.name, this.state.value, this.state.weight, this.props.studentConnected.jwtToken);
         this.props.navigation.state.params.updateGradesList(this.state.name, this.state.value, this.state.weight);
+        this._updateAverage();
         this.props.navigation.goBack();
 
     }

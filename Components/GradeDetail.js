@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import { deleteGradeFromApi } from '../API/myAPI'
+import { deleteGradeFromApi, getSubjectDetailFromApi} from '../API/myAPI'
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import moment from 'moment'
@@ -46,6 +46,7 @@ class GradeDetail extends Component {
             const action2 = { type: "INIT_CURRENTSUBJECT", value: subject }
             this.props.dispatch(action2)
         })
+        this.props.navigation.state.params.displaySubjectAverage
         this.props.navigation.goBack();
     }
 
@@ -59,6 +60,10 @@ class GradeDetail extends Component {
 
     }
 
+    _updateAverage = () => {
+        this.props.navigation.state.params.displaySubjectAverage()
+    }
+
     _updateGrade() {
         this.props.navigation.navigate('GradeUpdate',
             {
@@ -66,7 +71,8 @@ class GradeDetail extends Component {
                 name: this.state.grade.name,
                 value: this.state.grade.value,
                 weight: this.state.grade.weight,
-                updateGradesList: this._updateGradesList
+                updateGradesList: this._updateGradesList,
+                displaySubjectAverage : this._updateAverage
             })
     }
 

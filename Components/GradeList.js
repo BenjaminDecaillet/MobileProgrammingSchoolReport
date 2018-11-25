@@ -7,10 +7,12 @@ class GradeList extends Component {
     constructor(props) {
         super(props)
     }
+    _updateAverage = () => {
+        this.props.displaySubjectAverage();
+    }
 
     _displayDetailForGrade = (idGrade) => {
-        // On a récupéré les informations de la navigation, on peut afficher le détail de la note
-        this.props.navigation.navigate('GradeDetail', { idGrade: idGrade , fillGrades : this.props.fillGrades})
+        this.props.navigation.navigate('GradeDetail', { idGrade: idGrade , fillGrades : this.props.fillGrades, displaySubjectAverage: this._updateAverage})
     }
 
     render() {

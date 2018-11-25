@@ -89,7 +89,7 @@ class SubjectDetail extends Component {
         )
     }
 
-    _displaySubjectAverage() {
+    _displaySubjectAverage = () => {
         const subject = this.props.currentSubject
         if (subject != undefined) {
             let subjectAverage = 0;
@@ -107,7 +107,7 @@ class SubjectDetail extends Component {
     }
 
     _displayFormAddGrade = () => {
-        this.props.navigation.navigate('GradeCreate')
+        this.props.navigation.navigate('GradeCreate', { displaySubjectAverage: this._displaySubjectAverage() })
     }
 
     _displaySubject() {
@@ -160,6 +160,7 @@ class SubjectDetail extends Component {
                         <Text style={styles.default_text}>-     Number of notes : {subject.grades.length}</Text>
                     </View>
                     <GradeList style={{ flex: 5 }}
+                        displaySubjectAverage={this._displaySubjectAverage}
                         fillGrades={this._fillGrades}
                         navigation={this.props.navigation}
                     />
